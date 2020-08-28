@@ -21,14 +21,20 @@ namespace OrchardSkills.OrchardCore.OrchardCMS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddRazorPages();
             services.AddOrchardCms();
             services.AddGrpc();
-            //services.AddResponseCompression(opts =>
-            //{
-            //    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-            //        new[] { "application/octet-stream" });
-            //});
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,18 +58,13 @@ namespace OrchardSkills.OrchardCore.OrchardCMS
             app.UseOrchardCore();
             app.UseRouting();
             app.UseGrpcWeb();
-
+            app.UseCors();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<WeatherService>().EnableGrpcWeb();
-                //endpoints.MapFallbackToFile("index.html");
+                endpoints.MapGrpcService<WeatherService>().EnableGrpcWeb()
+                                                          .RequireCors("AllowAll");
+                endpoints.MapFallbackToFile("index.html");
             });
-            //app.UseAuthorization();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapRazorPages();
-            //});
         }
     }
 }
