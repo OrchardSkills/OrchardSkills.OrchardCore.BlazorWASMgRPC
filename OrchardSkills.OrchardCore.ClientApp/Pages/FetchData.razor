@@ -1,0 +1,48 @@
+﻿@page "/fetchdata"
+@inject GrpcChannel Channel
+@using Google.Protobuf.WellKnownTypes
+
+<h1>Weather Forecast</h1>
+<p>Fetch Forecast count: @forecastCount</p>
+<button class="btn btn-primary" @onclick="FetchForecast">Fetch Forecast</button>
+@if (forecasts == null)
+{
+    <p><em>Click Fetch Forecast button to update weather forecast</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.DateTime.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private IList<WeatherForecast>? forecasts;
+    private int forecastCount = 0;
+
+    private async void FetchForecast()
+    {
+        forecastCount++;
+        var client = new WeatherForecasts.WeatherForecastsClient(Channel);
+        forecasts = (await client.GetWeatherForecastsAsync(new Empty())).Forecasts;
+    }
+}

@@ -1,38 +1,7 @@
 ﻿@page "/"
-@using Google.Protobuf.WellKnownTypes
-@inject Classes.ClassesClient Client
 
-<h1>Classes</h1>
+<h1>Hello, world!</h1>
 
-@if (_classes == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _classes)
-            {
-                <tr>
-                    <td><a href="/class/@item.Id">@item.Name</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+Welcome to your new app.
 
-@code {
-    private GetAllResponse.Types.ClassArchiveItem[] _classes;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var results = await this.Client.GetAllAsync(new Empty());
-        this._classes = results?.Data?.ToArray();
-    }
-}
+<SurveyPrompt Title="How is Blazor working for you?" />

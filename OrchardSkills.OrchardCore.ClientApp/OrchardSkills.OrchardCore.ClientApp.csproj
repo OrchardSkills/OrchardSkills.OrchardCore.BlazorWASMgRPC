@@ -10,20 +10,15 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.1" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
-  </ItemGroup>
 
-  <ItemGroup>	
 	<PackageReference Include="Google.Protobuf" Version="3.13.0" />
+	<PackageReference Include="Grpc.Tools" Version="2.31.0" PrivateAssets="All" />
 	<PackageReference Include="Grpc.Net.Client" Version="2.31.0" />
 	<PackageReference Include="Grpc.Net.Client.Web" Version="2.31.0" />
-	<PackageReference Include="Grpc.Tools" Version="2.31.0">
-	  <PrivateAssets>all</PrivateAssets>
-	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>
+
+	<Protobuf Include="..\Proto\weather.proto" GrpcServices="Client" Link="Protos\weather.proto" Access="Internal" />
+	  
   </ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="Protos\classes.proto" GrpcServices="Client" />
-  </ItemGroup>	
-	
+ 
 </Project>

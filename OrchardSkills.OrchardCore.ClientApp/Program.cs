@@ -16,25 +16,25 @@ namespace OrchardSkills.OrchardCore.ClientApp
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<Counter>("my-counter");
+            builder.RootComponents.Add<FetchData>("my-data");
 
-            builder.Services.AddSingleton(sp =>
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            builder.Services.AddSingleton(services =>
             {
-                var config = sp.GetRequiredService<IConfiguration>();
-                var serverUrl = config["ServerUrl"];
+                // Get the service address from appsettings.json
+                var config = services.GetRequiredService<IConfiguration>();
+                var backendUrl = config["BackendUrl"];
 
-                var channel = GrpcChannel.ForAddress(serverUrl, new GrpcChannelOptions
-                {
-                    HttpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWeb, new HttpClientHandler())
-                });
+                // Create a channel with a GrpcWebHandler that is addressed to the backend server.
+                //
+                // GrpcWebText is used because server streaming requires it. If server streaming is not used in your app
+                // then GrpcWeb is recommended because it produces smaller messages.
+                var httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
 
-                var client = new Classes.ClassesClient(channel);
-                return client;
+                return GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions { HttpHandler = httpHandler });
             });
-
-            // builder.RootComponents.Add<Counter>("my-counter");
-
-            // builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             await builder.Build().RunAsync();
         }
